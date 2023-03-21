@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Parse arguments
+if [ $# -eq 0 ]; then
+    echo "Usage: xbatch [sbatch options] script.py"
+    exit 1
+fi
+ARGS=${@: 1:$#-1}
+CMD=${*: -1}
+
+# Queue job
+chmod a+x $CMD
+JOB=$(sbatch --output=$CMD.slurm-%j.out $ARGS -- /cvmfs/aph.gsi.de/xsuite/scripts/xlaunch $CMD)
+JOB_ID=$(echo $JOB | sed -n 's/Submitted batch job \(.*\)/\1/p')
+LOG="*slurm-$JOB_ID.out"
+echo "$JOB"
+
+# Show job list and status
+echo ""
+sleep 1
+xinfo
+
+# Show log
+echo ""
+echo "Now following log file, press CTRL+C to leave the job alone"
+echo "tail -f $LOG"
+until [ -f $LOG ]
+do
+  sleep 1
+done
+echo ""
+tail -f $LOG
+

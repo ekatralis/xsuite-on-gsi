@@ -1,0 +1,8 @@
+#!/bin/bash
+
+#SBATCH --partition gpu
+#SBATCH --gres gpu:8
+#SBATCH --constraint=mi100
+
+time singularity exec /cvmfs/aph.gsi.de/xsuite/xsuite.sif ./$@
+

@@ -1,0 +1,44 @@
+#!/bin/bash
+
+CH=$(printf '\e[30;1m')
+CP=$(printf '\e[0;32m')
+CY=$(printf '\e[0;33m')
+CO=$(printf '\e[0m')
+
+
+
+#############
+# Show help #
+#############
+
+echo "${CH}Help:"
+echo '  tail -f *slurm-JOBID.out                Follow job output'
+echo '  sinfo                                   List partition and nodes'
+echo '  squeue -l -p gpu -A acc -R res_01       List job queue for partition/group/reservation'
+#echo '  sacct                                   List job history'
+echo "${CO}"
+
+
+
+#################
+# Show job list #
+#################
+
+squeue -u $(id -un) --sort="-t,-p,i" --format="%i %.9P %4j %.8T %17R %.10M  %.10l %.6D %.4C  %Z  > %o" | sed -r "s|(/\S*)+/(\S*)|\2|g" | sed -r "s|(RUNNING)|${CP}\1${CO}|g" | sed -r "s|(PENDING)|${CY}\1${CO}|g"
+
+echo ''
+
+
+
+############
+# Show log #
+############
+
+LOGS=$(squeue -u $(id -un) -h -Si -tr --format="%Z/*slurm-%i.out")
+if [ -n "$LOGS" ]; then
+    tail -vn2 $LOGS | sed -r "s|(==> .* <==)|${CP}\1${CO}|g"
+    echo ''
+fi
+
+echo ''
+
