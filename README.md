@@ -27,6 +27,8 @@ echo 'PATH=$PATH:/cvmfs/aph.gsi.de/xsuite/scripts/' >> ~/.bashrc
 
 **Run the example**
 ```bash
+cp /cvmfs/aph.gsi.de/xsuite/example.py .
+
 # Start an interactive session for testing
 xdebug
 
@@ -41,15 +43,23 @@ Context 1: Portable Computing Language
 Device 1.0: pthread-AMD EPYC 7551 32-Core Processor   # <-- this is the CPU
 
 # Run the example
-Singularity> /cvmfs/aph.gsi.de/xsuite/example.py cpu
-# --> Tracking completed in: 2.285 s
-Singularity> /cvmfs/aph.gsi.de/xsuite/example.py gpu
-# --> Tracking completed in: 0.094 s
+Singularity> ./example.py cpu
+# --> Tracking completed in: 28.94 s
+Singularity> ./example.py gpu
+# --> Tracking completed in:  0.41 s
+
+Singularity> exit
 ```
 
 **Submit a job**
+
 ```bash
-xbatch /cvmfs/aph.gsi.de/xsuite/example.py
+# Copy your script to the lustre storage
+cd /lustre/$(id -ng)/$(id -nu)
+cp /cvmfs/aph.gsi.de/xsuite/example.py .
+
+# Submit it to the queue
+xbatch example.py
 ```
 
 It may take a while until the job is started. To check your job status:
@@ -57,7 +67,7 @@ It may take a while until the job is started. To check your job status:
 xinfo
 ```
 
-After the job has finished, the log should look like this:
+After the job has finished, the log file `example.py.slurm-JOBID.out` should look like this:
 ```txt
 OpenCL: available platforms (2):
   0 AMD Accelerated Parallel Processing (Advanced Micro Devices, Inc.)
@@ -97,5 +107,6 @@ sys     0m0.758s
 - AMD Accelerated Parallel Processing drivers: https://www.amd.com/en/support/linux-drivers
 - Pyopencl docs: https://documen.tician.de/pyopencl/index.html
 - CL compiler options: https://man.opencl.org/clBuildProgram.html
+
 
 

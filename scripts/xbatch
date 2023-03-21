@@ -5,12 +5,13 @@ if [ $# -eq 0 ]; then
     echo "Usage: xbatch [sbatch options] script.py"
     exit 1
 fi
-ARGS=${@: 1:$#-1}
+
 CMD=${*: -1}
+ARGS="${@: 1:$#-1} --output=$CMD.slurm-%j.out"
 
 # Queue job
 chmod a+x $CMD
-JOB=$(sbatch --output=$CMD.slurm-%j.out $ARGS -- /cvmfs/aph.gsi.de/xsuite/scripts/xlaunch $CMD)
+JOB=$(sbatch $ARGS -- /cvmfs/aph.gsi.de/xsuite/scripts/xlaunch $CMD)
 JOB_ID=$(echo $JOB | sed -n 's/Submitted batch job \(.*\)/\1/p')
 LOG="*slurm-$JOB_ID.out"
 echo "$JOB"
