@@ -150,6 +150,11 @@ Singularity> echo $PYTHONPATH
 </details>
 
 
+*If your issue is not listed here, but you managed to solve it:  
+Do your colleagues a favor and add it here (via merge request or mail to p.niedermayer@gsi.de)*
+
+
+
 ## Further reading
 - High Performance Computing at GSI: https://hpc.gsi.de/virgo
 - Slurm documentation: https://slurm.schedmd.com/documentation.html
