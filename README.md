@@ -119,8 +119,13 @@ Device Type:                                     CL_DEVICE_TYPE_CPU
 <details>
 <summary>No, not recognized at all</summary>
 
-Check if you are member of the video group on virgo (outside the container) with the `id` command.  
-Request access to the GPUs by sending an email to cluster-service@gsi.de with your username and the request to be added to the video group in order to use the AMD GPUs.
+Make sure you are using the slurm option `--gres=gpu` as is done by the [`xdebug`](scripts/xdebug) script.
+See https://hpc.gsi.de/virgo/examples/gpus.html for more details.
+
+Also, check if you are member of the **video** group on virgo by using the `id` command (outside the container).  
+If not, request access by sending an email to cluster-service@gsi.de with your username and the request to be added to the video group in order to use the AMD GPUs.
+
+The `rocminfo` command (if available) might also provide useful hints.
 
 </details>
 
