@@ -98,6 +98,52 @@ sys     0m0.758s
 ```
 
 
+## Troubleshooting
+
+<details>
+<summary>No GPUs are shown or I get the error message "Could not find a GPU via the opencl context"</summary>
+
+Check if GPUs are recognized by opencl at all with the `clinfo` command which is independent of pyopencl
+```bash
+Singularity> clinfo
+...
+Platform Name:                                   AMD Accelerated Parallel Processing
+Number of devices:                               1
+Device Type:                                     CL_DEVICE_TYPE_GPU
+...
+Platform Name:                                   Portable Computing Language
+Number of devices:                               1
+Device Type:                                     CL_DEVICE_TYPE_CPU
+```
+
+<details>
+<summary>No, not recognized at all</summary>
+
+Check if you are member of the video group on virgo (outside the container) with the `id` command.  
+Request access to the GPUs by sending an email to cluster-service@gsi.de with your username and the request to be added to the video group in order to use the AMD GPUs.
+
+</details>
+
+
+<details>
+<summary>Yes, clinfo does show a GPU</summary>
+
+Then the issue is related to python.  
+Make sure you are using the python installation of the singularity container. Since your `PATH` environment variable is adopted when you launch a container, make sure it does not link to a conflicting python installation (like miniconda).
+```bash
+Singularity> type python3
+python3 is /usr/bin/python3
+Singularity> echo $PATH
+/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/rocm/bin:/opt/rocm/opencl/bin
+Singularity> echo $PYTHONPATH
+    
+```
+
+</details>
+
+
+</details>
+
 
 ## Further reading
 - High Performance Computing at GSI: https://hpc.gsi.de/virgo
