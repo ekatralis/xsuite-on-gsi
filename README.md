@@ -161,11 +161,12 @@ Do your colleagues a favor and add it here (via merge request or mail to p.niede
 
 ## Further reading
 - High Performance Computing at GSI: https://hpc.gsi.de/virgo
-- Slurm documentation: https://slurm.schedmd.com/documentation.html
+- AMD ROCm GPUs at GSI: https://hpc.gsi.de/virgo/examples/gpus.html#amd-rocm
+- Slurm: https://slurm.schedmd.com/documentation.html
 - Xsuite: https://xsuite.readthedocs.io
 - List of GPU processors (gfx): https://llvm.org/docs/AMDGPUUsage.html
 - AMD Accelerated Parallel Processing drivers: https://www.amd.com/en/support/linux-drivers
-- Pyopencl docs: https://documen.tician.de/pyopencl/index.html
+- Pyopencl: https://documen.tician.de/pyopencl/index.html
 - CL compiler options: https://man.opencl.org/clBuildProgram.html
 
 
