@@ -1,11 +1,15 @@
 # Xsuite singularity images
 
-We provide the following singularity images for [Xsuite](https://xsuite.readthedocs.io):
+This repository contains
+definition files to build singularity images,
+helper scripts
+and examples
+for running [Xsuite](https://xsuite.readthedocs.io) simulations on the GSI cluster.
 
-- **AMD** Radeon GPU image  
-  ```
-  /cvmfs/aph.gsi.de/xsuite/xsuite.sif
-  ```
+The images are available at:
+```
+/cvmfs/aph.gsi.de/xsuite/xsuite.sif
+```
 
 Please refer to https://git.gsi.de/p.niedermayer/xsuite-on-hpc for usage documentation
 
@@ -165,4 +169,6 @@ Do your colleagues a favor and add it here (via merge request or mail to p.niede
 - CL compiler options: https://man.opencl.org/clBuildProgram.html
 
 
+## Admin documentation
 
+See [Wiki](https://git.gsi.de/p.niedermayer/xsuite-on-hpc/-/wikis)

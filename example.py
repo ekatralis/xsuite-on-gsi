@@ -19,7 +19,7 @@ import xpart as xp
 ## Context
 ####################
 
-context = sys.argv[1] if len(sys.argv) > 1 else 'gpu'  # default to GPU
+context = sys.argv[1] if len(sys.argv) > 1 else None
 
 if context == 'cpu':
     context = xo.ContextCpu()
@@ -54,7 +54,7 @@ else:
 
 if context is None:
     print('Usage: ./example.py [context] [device]')
-    print('Available contexts: cpu, gpu, opencl, cupy')
+    print('Available contexts: cpu, opencl, cupy')
     exit(1)
 
 print()
@@ -77,7 +77,7 @@ line = xt.Line(
     element_names=['drift_0', 'quad_0', 'drift_1', 'quad_1'])
 
 ## Transfer lattice on context and compile tracking code
-tracker = xt.Tracker(_context=context, line=line)
+line.build_tracker(_context=context)
 
 ## Build particle object on context
 n_part = int(1e6)
@@ -101,8 +101,8 @@ particles = xp.Particles(_context=context,
 n_turns = int(1e3)
 print(f'Tracking {n_part:g} particles over {n_turns:g} turns...'); t = time.perf_counter()
 
-tracker.track(particles, num_turns=n_turns,
-#              turn_by_turn_monitor=True
+line.track(particles, num_turns=n_turns,
+#           turn_by_turn_monitor=True
 )
 
 context.synchronize() # wait for completion (mandatory for CuPy context)
@@ -110,11 +110,11 @@ context.synchronize() # wait for completion (mandatory for CuPy context)
 print('Tracking completed in:', time.perf_counter()-t, 's')
 
 ## Turn-by-turn data is available at:
-print(particles.x)
+#print(particles.x)
 # etc...
 
 ## Check if it worked
 x = context.nparray_from_context_array(particles.x)
 assert n_part == int(1e6) and n_turns == int(1e3) and np.allclose(x[:3], [-9.40795199e-05,  1.12466795e-04, -2.97543231e-05])
-
+print('Test passed')
 
