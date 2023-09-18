@@ -8,7 +8,7 @@ for running [Xsuite](https://xsuite.readthedocs.io) simulations on the GSI clust
 
 The images are available at:
 ```
-/cvmfs/aph.gsi.de/xsuite/xsuite.sif
+/cvmfs/aph.gsi.de/xsuite/xsuite_amdrocm.sif
 ```
 
 Please refer to https://git.gsi.de/p.niedermayer/xsuite-on-hpc for usage documentation
