@@ -8,7 +8,7 @@ for running [Xsuite](https://xsuite.readthedocs.io) simulations on the GSI clust
 
 The images are available at:
 ```
-/cvmfs/aph.gsi.de/xsuite/xsuite_amdrocm.sif
+/cvmfs/aph.gsi.de/xsuite/xsuite.sif
 ```
 
 Please refer to https://git.gsi.de/p.niedermayer/xsuite-on-hpc for usage documentation
@@ -28,6 +28,9 @@ A number of scripts are provided to help submitting jobs for Xsuite to the **GPU
 ```bash
 echo 'PATH=$PATH:/cvmfs/aph.gsi.de/xsuite/scripts/' >> ~/.bashrc
 ```
+I recommend making copies of these scripts so that you can modify the parameters as well as the path to the singularity image.
+
+
 
 **Run the example**
 ```bash

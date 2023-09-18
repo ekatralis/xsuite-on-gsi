@@ -3,6 +3,14 @@
 *.deb
 *.img
 
+
+# these are symbolic links only
+!xsuite-gr_amdrocm.sif
+!xsuite.sif
+!xsuite_amdrocm.sif
+!xsuite_cuda.sif
+
+
 xsuite*/
 ubuntu*/
 centos*/
