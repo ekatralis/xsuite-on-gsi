@@ -15,6 +15,8 @@ Please refer to https://git.gsi.de/p.niedermayer/xsuite-on-hpc for usage documen
 
 ## Getting started
 
+If you use the containers provided, please star the repository at https://git.gsi.de/p.niedermayer/xsuite-on-hpc and subscribe to release notifications so as to be informed on important changes.
+
 *This guide was written on 2023-03-21 by p.niedermayer@gsi.de*
 
 **Login to GSI High-Performance Computing (HPC)**  
