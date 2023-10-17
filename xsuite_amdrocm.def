@@ -39,6 +39,7 @@ pip install cpymad
 pip install PyHEADTAIL
 pip install xsuite
 xsuite-prebuild
+pip install xplt
 pip freeze
 
 # cleanup
