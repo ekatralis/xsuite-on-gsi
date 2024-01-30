@@ -129,7 +129,7 @@ Device Type:                                     CL_DEVICE_TYPE_CPU
 <summary>No, not recognized at all</summary>
 
 Make sure you are using the slurm option `--gres=gpu` as is done by the [`xdebug`](scripts/xdebug) script.
-See https://hpc.gsi.de/virgo/examples/gpus.html for more details.
+See https://hpc.gsi.de/virgo/user-guide/examples/gpus.html for more details.
 
 Also, check if you are member of the **video** group on virgo by using the `id` command (outside the container).  
 If not, request access by sending an email to cluster-service@gsi.de with your username and the request to be added to the video group in order to use the AMD GPUs.
@@ -159,6 +159,11 @@ Singularity> echo $PYTHONPATH
 </details>
 
 
+
+
+
+
+
 *If your issue is not listed here, but you managed to solve it:  
 Do your colleagues a favor and add it here (via merge request or mail to p.niedermayer@gsi.de)*
 
@@ -166,7 +171,7 @@ Do your colleagues a favor and add it here (via merge request or mail to p.niede
 
 ## Further reading
 - High Performance Computing at GSI: https://hpc.gsi.de/virgo
-- AMD ROCm GPUs at GSI: https://hpc.gsi.de/virgo/examples/gpus.html#amd-rocm
+- AMD ROCm GPUs at GSI: https://hpc.gsi.de/virgo/user-guide/examples/gpus.html#amd-rocm
 - Slurm: https://slurm.schedmd.com/documentation.html
 - Xsuite: https://xsuite.readthedocs.io
 - List of GPU processors (gfx): https://llvm.org/docs/AMDGPUUsage.html
