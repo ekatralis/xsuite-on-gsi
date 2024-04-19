@@ -10,8 +10,8 @@ The images are available at:
 ```
 /cvmfs/aph.gsi.de/xsuite/xsuite.sif
 ```
-
-Please refer to https://git.gsi.de/p.niedermayer/xsuite-on-hpc for usage documentation
+In the same folder there are several images, variants and historic containers.
+Please refer to https://git.gsi.de/p.niedermayer/xsuite-on-hpc for usage documentation and description.
 
 ## Getting started
 
@@ -31,6 +31,7 @@ A number of scripts are provided to help submitting jobs for Xsuite to the **GPU
 echo 'PATH=$PATH:/cvmfs/aph.gsi.de/xsuite/scripts/' >> ~/.bashrc
 ```
 I recommend making copies of these scripts so that you can modify the parameters as well as the path to the singularity image.
+It's a good idea to link to a specific container version such as `xsuite_amdrocm_20230908.sif` to prevent unexpected changes, instead of using the generic `xsuite.sif` which always points to the latest container.
 
 
 
