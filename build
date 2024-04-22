@@ -1,0 +1,42 @@
+# Helper script to build SIF container from DEF file
+# using apptainer on GSI virgo HPC
+#
+# Author: p.niedermayer@gsi.de
+# Date: 2024-04-19
+
+
+
+set -ue
+
+# Parse arguments
+if [ $# -eq 0 ]; then
+    echo "Usage: build container.def"
+    exit 1
+fi
+
+LUSTRE_HOME=/lustre/$(id -ng)/$(id -nu)
+if [ ! -d "$LUSTRE_HOME" ]; then
+  echo "Error: directory $LUSTRE_HOME does not exist, are you on virgo?"
+  exit 1
+fi
+export APPTAINER_DEFFILE=$(realpath ${*: -1})
+BASENAME=${APPTAINER_DEFFILE##*/}
+export APPTAINER_CONTAINER=$LUSTRE_HOME/${BASENAME%.def}_$(date +%Y%m%d).sif
+echo "Input definition file: $APPTAINER_DEFFILE"
+echo "Output container file: $APPTAINER_CONTAINER"
+
+
+# Create a user specific directory in /tmp
+tmp=$(mktemp -d /tmp/$USER-apptainer-XXXXXX)
+export APPTAINER_TMPDIR=$tmp
+export APPTAINER_CACHEDIR=$tmp
+
+
+# Build the container image
+apptainer build $APPTAINER_CONTAINER $APPTAINER_DEFFILE
+
+
+# Test and show package versions
+apptainer exec $APPTAINER_CONTAINER pip list | grep -E "(^x|numpy|scipy|plot|pandas|mad)"
+
+
