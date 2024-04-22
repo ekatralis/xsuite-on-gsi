@@ -8,10 +8,12 @@ for running [Xsuite](https://xsuite.readthedocs.io) simulations on the GSI clust
 
 The images are available at:
 ```
-/cvmfs/aph.gsi.de/xsuite/xsuite.sif
+/cvmfs/aph.gsi.de/xsuite/
 ```
-In the same folder there are several images, variants and historic containers.
-Please refer to https://git.gsi.de/p.niedermayer/xsuite-on-hpc for usage documentation and description.
+This folder contains several images in the form `xsuite_variant_YYMMDD.sif` and symbolic links (e.g. `xsuite.sif`) pointing to the latest image.
+The variant `xsuite_amdrocm` is suited for the AMD GPUs used at GSI HPC.  
+For usage documentation and general description please refer to: https://git.gsi.de/p.niedermayer/xsuite-on-hpc  
+Further information on the provided images is available at: https://git.gsi.de/xsuite/xsuite-on-hpc/-/releases  
 
 ## Getting started
 
