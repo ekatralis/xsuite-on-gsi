@@ -15,7 +15,7 @@ The variant `xsuite_amdrocm` is suited for the AMD GPUs used at GSI HPC.
 For usage documentation and general description please refer to: https://git.gsi.de/p.niedermayer/xsuite-on-hpc  
 Further information on the provided images is available at: https://git.gsi.de/xsuite/xsuite-on-hpc/-/releases  
 
-To build your own contianers using the definition files provided in this repository, use the `build` script or refer to https://hpc.gsi.de/virgo/user-guide/containers/build.html
+To build your own containers using the definition files provided in this repository, use the `build` script or refer to https://hpc.gsi.de/virgo/user-guide/containers/build.html
 
 ## Getting started
 
