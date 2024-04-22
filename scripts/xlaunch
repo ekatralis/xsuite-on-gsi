@@ -3,6 +3,9 @@
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:8
 #SBATCH --constraint=mi100
+####SBATCH --time=7-0:0:0
+####SBATCH --account=abc
+####SBATCH --reservation=res_01
+####SBATCH --exclude=lxbk0000
 
 time singularity exec /cvmfs/aph.gsi.de/xsuite/xsuite.sif ./$@
-

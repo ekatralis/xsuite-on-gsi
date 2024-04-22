@@ -16,6 +16,9 @@ JOB_ID=$(echo $JOB | sed -n 's/Submitted batch job \(.*\)/\1/p')
 LOG="*slurm-$JOB_ID.out"
 echo "$JOB"
 
+# We are done, rest is just for convenience
+#exit 0
+
 # Show job list and status
 echo ""
 sleep 1
