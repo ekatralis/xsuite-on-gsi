@@ -38,7 +38,7 @@ pip install --upgrade cython ipython scipy matplotlib pandas pytest pyopencl pin
 pip install cpymad
 pip install PyHEADTAIL
 pip install xsuite
-xsuite-prebuild
+xsuite-prebuild regenerate
 pip install xplt
 pip freeze
 
