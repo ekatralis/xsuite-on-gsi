@@ -1,21 +1,32 @@
 # Xsuite singularity images
 
+
 This repository contains
 definition files to build singularity images,
 helper scripts
 and examples
 for running [Xsuite](https://xsuite.readthedocs.io) simulations on the GSI cluster.
 
+**Provided images**
+
 The images are available at:
 ```
 /cvmfs/aph.gsi.de/xsuite/
 ```
 This folder contains several images in the form `xsuite_variant_YYYYMMDD.sif` and symbolic links (e.g. `xsuite.sif`) pointing to the latest image.
-The variant `xsuite_amdrocm` is suited for the AMD GPUs used at GSI HPC.  
-For usage documentation and general description please refer to: https://git.gsi.de/p.niedermayer/xsuite-on-hpc  
-Further information on the provided images is available at: https://git.gsi.de/xsuite/xsuite-on-hpc/-/releases  
+The variant `xsuite_amdrocm` is suited for the AMD GPUs used at GSI HPC.
+For usage documentation and general description please refer to https://git.gsi.de/p.niedermayer/xsuite-on-hpc and https://git.gsi.de/xsuite/xsuite-on-hpc/-/releases  
 
-To build your own containers using the definition files provided in this repository, use the `build` script or refer to https://hpc.gsi.de/virgo/user-guide/containers/build.html
+**Build your own image**
+
+To build your own container image using the definition files provided in this repository:
+```bash
+ssh virgo.hpc.gsi.de
+$ git clone git@git.gsi.de:xsuite/xsuite-on-hpc.git
+$ cd xsuite-on-hpc
+$ ./build xsuite_amdrocm.def
+```
+Refer to https://hpc.gsi.de/virgo/user-guide/containers/build.html for a detailed description.
 
 ## Getting started
 
