@@ -7,9 +7,9 @@ helper scripts
 and examples
 for running [Xsuite](https://xsuite.readthedocs.io) simulations on the GSI cluster.
 
-**Provided images**
+**Prebuild images**
 
-The images are available at:
+Prebuild images are available via APH CVMFS  (maintained by [Adrian Oeftiger](mailto:a.oeftiger@gsi.de)) in the xsuite folder at:
 ```
 /cvmfs/aph.gsi.de/xsuite/
 ```
