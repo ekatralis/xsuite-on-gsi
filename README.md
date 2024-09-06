@@ -37,7 +37,7 @@ If you use the containers provided, please star the repository at https://git.gs
 **Login to GSI High-Performance Computing (HPC)**  
 If you do not have an account, read [this](https://hpc.gsi.de/virgo/introduction/request_access.html)
 ```bash
-ssh virgo2.hpc.gsi.de
+ssh virgo.hpc.gsi.de
 ```
 
 **Add scripts to your path**  
