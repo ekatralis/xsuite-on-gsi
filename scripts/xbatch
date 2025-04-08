@@ -1,28 +1,52 @@
 #!/bin/bash
 
+XLAUNCH="/cvmfs/aph.gsi.de/xsuite/scripts/xlaunch"
+XINFO="/cvmfs/aph.gsi.de/xsuite/scripts/xinfo"
+
 # Parse arguments
 if [ $# -eq 0 ]; then
-    echo "Usage: xbatch [sbatch options] script.py"
+    echo "Usage: xbatch [[sbatch options] --] script.py [script options]"
     exit 1
 fi
+SBATCH_ARGS=""
+CMD=""
+found_double_dash=false
+for arg in "$@"; do
+    if [ "$arg" == "--" ]; then
+        found_double_dash=true
+        continue
+    fi
+    if [ "$found_double_dash" = false ]; then
+        SBATCH_ARGS+="$arg "
+    else
+        CMD+="$arg "
+    fi
+done
+# If no "--" was found, treat all arguments as CMD
+if [ "$found_double_dash" = false ]; then
+    CMD="$*"
+    SBATCH_ARGS=""
+fi
 
-CMD=${*: -1}
-ARGS="${@: 1:$#-1} --output=$CMD.slurm-%j.out"
+
 
 # Queue job
-chmod a+x $CMD
-JOB=$(sbatch $ARGS -- /cvmfs/aph.gsi.de/xsuite/scripts/xlaunch $CMD)
+#set -x
+chmod a+x ${CMD%% *}
+JOB=$(sbatch $SBATCH_ARGS --output=${CMD%% *}.slurm-%j.out --comment="$CMD" -- $XLAUNCH $CMD)
 JOB_ID=$(echo $JOB | sed -n 's/Submitted batch job \(.*\)/\1/p')
 LOG="*slurm-$JOB_ID.out"
 echo "$JOB"
 
+
 # We are done, rest is just for convenience
 #exit 0
+
 
 # Show job list and status
 echo ""
 sleep 1
-xinfo
+$XINFO
 
 # Show log
 echo ""

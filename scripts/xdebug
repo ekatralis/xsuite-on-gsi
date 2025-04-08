@@ -1,4 +1,0 @@
-#!/bin/bash
-
-srun -p debug --gres=gpu --time 30:0 --pty -- singularity exec /cvmfs/aph.gsi.de/xsuite/xsuite.sif bash
-

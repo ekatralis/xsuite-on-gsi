@@ -2,14 +2,14 @@ Bootstrap: localimage
 From: xsuite_amdrocm.sif
 
 %post
+export DEBIAN_FRONTEND=noninteractive
 apt update
 apt install -y software-properties-common
 
 # install GNU Radio
 ####################
-add-apt-repository -y ppa:gnuradio/gnuradio-releases
 apt update
-DEBIAN_FRONTEND=noninteractive apt install -y gnuradio python3-packaging
+apt install -y gnuradio python3-packaging
 
 # cleanup
 ##########

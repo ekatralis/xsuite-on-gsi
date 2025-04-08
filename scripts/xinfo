@@ -25,7 +25,7 @@ echo "${CO}"
 #################
 
 # sort by state(-t), priority(-p), jobid(+i)
-squeue -u $(id -un) --sort="-t,-p,i" --format="%.9i %.9P %.8j %.10T %.17R %.5Q %.8M %.10l %.6D %.4C  %Z  > %o" | sed -r "s|(/\S*)+/(\S*)|\2|g" | sed -r "s|(RUNNING)|${CP}\1${CO}|g" | sed -r "s|(PENDING)|${CY}\1${CO}|g"
+squeue -u $(id -un) --sort="-t,-p,i" --format="%.9i %.9P %.8j %.10T %.17R %.5Q %.8M %.10l %.6D %.4C  %Z  > %o  %k" | sed -r "s|(/\S*)+/(\S*)|\2|g" | sed -r "s|(RUNNING)|${CP}\1${CO}|g" | sed -r "s|(PENDING)|${CY}\1${CO}|g"
 echo ''
 
 

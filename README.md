@@ -9,7 +9,7 @@ for running [Xsuite](https://xsuite.readthedocs.io) simulations on the GSI clust
 
 **Prebuild images**
 
-Prebuild images are available via APH CVMFS  (maintained by [Adrian Oeftiger](mailto:a.oeftiger@gsi.de)) in the xsuite folder at:
+Prebuild images are available via APH CVMFS in the xsuite folder at:
 ```
 /cvmfs/aph.gsi.de/xsuite/
 ```
@@ -32,71 +32,116 @@ Refer to https://hpc.gsi.de/virgo/user-guide/containers/build.html for a detaile
 
 If you use the containers provided, please star the repository at https://git.gsi.de/p.niedermayer/xsuite-on-hpc and subscribe to release notifications so as to be informed on important changes.
 
-*This guide was written on 2023-03-21 by p.niedermayer@gsi.de*
+*This guide was last updated on 2025-04-08 by p.niedermayer@gsi.de*
 
 **Login to GSI High-Performance Computing (HPC)**  
-If you do not have an account, read [this](https://hpc.gsi.de/virgo/introduction/request_access.html)
+If you do not have an account, contact your appartements coordinator (see [FAQ](https://hpc.gsi.de/virgo/help/faq))
 ```bash
 ssh virgo.hpc.gsi.de
 ```
-
-**Add scripts to your path**  
-A number of scripts are provided to help submitting jobs for Xsuite to the **GPU** nodes.
+Then change to your lustre folder (only the lustre file system will be accessible from the job nodes):
 ```bash
-echo 'PATH=$PATH:/cvmfs/aph.gsi.de/xsuite/scripts/' >> ~/.bashrc
+export LUSTRE_HOME=/lustre/$(id -ng)/$(id -nu)
+cd $LUSTRE_HOME
 ```
-I recommend making copies of these scripts so that you can modify the parameters as well as the path to the singularity image.
-It's a good idea to link to a specific container version such as `xsuite_amdrocm_20230908.sif` to prevent unexpected changes, instead of using the generic `xsuite.sif` which always points to the latest container.
-
-
-
-**Run the example**
+And create a script (here we just copy the example and make sure it's executable):
 ```bash
 cp /cvmfs/aph.gsi.de/xsuite/example.py .
-
-# Start an interactive session for testing
-xdebug
-
-# List installed software versions
-Singularity> pip list | grep -E "(^x|numpy|scipy|plot)"
-
-# List available GPUs
-Singularity> python3 -c 'import xobjects as xo;xo.ContextPyopencl.print_devices()'
-Context 0: AMD Accelerated Parallel Processing
-Device 0.0: gfx906:sramecc+:xnack-                    # <-- this is the GPU (gfx906 = AMD Radeon Instinct MI50)
-Context 1: Portable Computing Language
-Device 1.0: pthread-AMD EPYC 7551 32-Core Processor   # <-- this is the CPU
-
-# Run the example
-Singularity> ./example.py cpu
-# --> Tracking completed in: 28.94 s
-Singularity> ./example.py gpu
-# --> Tracking completed in:  0.41 s
-
-Singularity> exit
+chmod a+x example.py
 ```
 
-**Submit a job**
+**Start an interactive session**
 
+Run an interactive session (pty) on the GPU partition with all 8 GPUs available per node, and use the xsuite singularity image:
 ```bash
-# Copy your script to the lustre storage
-cd /lustre/$(id -ng)/$(id -nu)
-cp /cvmfs/aph.gsi.de/xsuite/example.py .
-
-# Submit it to the queue
-xbatch example.py
+srun --partition=gpu --gres=gpu:8 --pty -- singularity shell /cvmfs/aph.gsi.de/xsuite/xsuite.sif
 ```
 
-It may take a while until the job is started. To check your job status:
+Once the node is allocated, check the software versions (always a good idea to test locally with exactly the same versions to avoid suprises):
+```bash
+python --version
+pip list | grep -Ei "(^x|mad|numpy|scipy)"
+```
+
+Check the available contexts for running xsuite simulations:
+```bash
+python3 -c 'import xobjects as xo;xo.ContextPyopencl.print_devices()'
+```
+> This will print something like the following, where you can see the 8 GPUs (gfx908 is the AMD Readon Instinct MI100) as well as the CPU
+> ```text
+> Platform 0  : AMD Accelerated Parallel Processing
+> Device   0.0: gfx908:sramecc+:xnack-
+> Device   0.1: gfx908:sramecc+:xnack-
+> Device   0.2: gfx908:sramecc+:xnack-
+> Device   0.3: gfx908:sramecc+:xnack-
+> Device   0.4: gfx908:sramecc+:xnack-
+> Device   0.5: gfx908:sramecc+:xnack-
+> Device   0.6: gfx908:sramecc+:xnack-
+> Device   0.7: gfx908:sramecc+:xnack-
+> Platform 1  : Portable Computing Language
+> Device   1.0: cpu-haswell-AMD EPYC 7413 24-Core Processor
+> ```
+
+
+**Run the example script**
+
+Since we just copied the script to our lustre home, it is mounted in the image and we can simply execute it:
+```bash
+./example.py gpu
+```
+> This runs the example tracking on a single GPU, which is very fast
+> ```text
+> Using context: ContextPyopencl:0.0
+> Tracking 1e+06 particles over 1000 turns...
+> Tracking completed in: 0.39723753998987377 s
+> Test passed
+> ```
+To compare with, the same tracking executed on CPU:
+```bash
+./example.py cpu
+```
+> ```text
+> Using context: ContextCpu
+> Tracking 1e+06 particles over 1000 turns...
+> Tracking completed in: 87.2150330208242 s
+> Test passed
+> ```
+
+Finally log out
+```bash
+exit
+```
+
+
+**Job submission**  
+Normally, you want to submit jobs non-interactively. To help doning so, we provide a number of scripts.
+Copy them to your personal folder and adjust them to your needs (if required):
+```bash
+mkdir $LUSTRE_HOME/scripts
+cp /cvmfs/aph.gsi.de/xsuite/scripts/* $LUSTRE_HOME/scripts/
+chmod a+x $LUSTRE_HOME/scripts/*
+echo "PATH=\$PATH:$LUSTRE_HOME/scripts/" >> ~/.bashrc
+# Log out and back in for this to take effect
+```
+To prevent unexpected changes when we update the images, it's a good idea to pin the container used by the scripts, i.e. change the generic `xsuite.sif` to a specific version such as `xsuite_amdrocm_20250408.sif` and adjust the paths in the scripts to point to your local copy.
+
+Then you can copy your scripts to lustre (we'll use the example script from above) and submit a job:
+```bash
+cd $LUSTRE_HOME
+# example.py already copied (see above)
+xbatch example.py gpu
+```
+
+This will start monitoring the job's logfile `example.py.slurm-JOBID.out` for your convenience, press CTRL-C to leave the job alone. To check your job status later run:
 ```bash
 xinfo
 ```
 
-After the job has finished, the log file `example.py.slurm-JOBID.out` should look like this:
+After the job has finished, the log file should look like this:
 ```txt
 OpenCL: available platforms (2):
   0 AMD Accelerated Parallel Processing (Advanced Micro Devices, Inc.)
-    OpenCL 2.1 AMD-APP (3452.0)
+    OpenCL 2.1 AMD-APP (3635.0)
     0.0 GPU: gfx908:sramecc+:xnack-
     0.1 GPU: gfx908:sramecc+:xnack-
     0.2 GPU: gfx908:sramecc+:xnack-
@@ -106,20 +151,19 @@ OpenCL: available platforms (2):
     0.6 GPU: gfx908:sramecc+:xnack-
     0.7 GPU: gfx908:sramecc+:xnack-
   1 Portable Computing Language (The pocl project)
-    OpenCL 2.0 pocl 1.8  Linux, None+Asserts, RELOC, LLVM 11.1.0, SLEEF, DISTRO, POCL_DEBUG
-    1.0 CPU: pthread-AMD EPYC 7413 24-Core Processor
+    OpenCL 3.0 PoCL 5.0+debian  Linux, None+Asserts, RELOC, SPIR, LLVM 16.0.6, SLEEF, DISTRO, POCL_DEBUG
+    1.0 CPU: cpu-haswell-AMD EPYC 7413 24-Core Processor
 Using device: 0.0
 
 
-Using context: <xobjects.context_pyopencl.ContextPyopencl object at 0x7f9b21cacb50>
+Using context: ContextPyopencl:0.0
 Tracking 1e+06 particles over 1000 turns...
-Tracking completed in: 0.277615818195045 s
-[-9.40795199e-05  1.12466795e-04 -2.97543231e-05 ... -3.90585592e-04
-  5.41514519e-04  6.29759048e-04]
+Tracking completed in: 0.4085924569517374 s
+Test passed
 
-real    0m4.323s
-user    0m2.987s
-sys     0m0.758s
+real    0m9.761s
+user    0m5.873s
+sys     0m1.221s
 ```
 
 
