@@ -2,6 +2,7 @@
 *.sif
 *.deb
 *.img
+*.code-workspace
 
 
 # these are symbolic links only
