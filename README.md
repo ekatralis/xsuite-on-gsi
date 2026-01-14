@@ -14,7 +14,10 @@ Prebuild images are available via APH CVMFS in the xsuite folder at:
 /cvmfs/aph.gsi.de/xsuite/
 ```
 This folder contains several images in the form `xsuite_variant_YYYYMMDD.sif` and symbolic links (e.g. `xsuite.sif`) pointing to the latest image.
-The variant `xsuite_amdrocm` is suited for the AMD GPUs used at GSI HPC.
+The variants `xsuite_amdrocm` and `xsuite_amdopencl` are suited for the AMD GPUs used at GSI HPC.
+- The variant `xsuite_amdrocm` includes the full rocm stack, which results in a larger container. It provides both `ContextCupy` and `ContextPyopencl` on AMD GPUs.
+- The variant `xsuite_amdopencl` includes only the rocm components linked to OpenCL. It provides only `ContextPyopencl`
+
 For usage documentation and general description please refer to https://git.gsi.de/p.niedermayer/xsuite-on-hpc and https://git.gsi.de/xsuite/xsuite-on-hpc/-/releases  
 
 **Build your own image**
