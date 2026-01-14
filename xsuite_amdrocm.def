@@ -1,0 +1,114 @@
+Bootstrap: docker
+From: ubuntu:24.04
+
+%labels
+AUTHOR Evangelos Katralis
+
+%help
+See https://git.gsi.de/p.niedermayer/xsuite-on-hpc
+
+%files
+example.py /xsuite/example.py
+
+%post
+export DEBIAN_FRONTEND=noninteractive
+apt-get update
+apt-get install -y wget libnuma-dev git-all
+
+
+# install AMD drivers
+######################
+# see https://www.amd.com/en/support
+ROCM_KEY=https://repo.radeon.com/rocm/rocm.gpg.key
+DRIVER=https://repo.radeon.com/amdgpu-install/6.3.4/ubuntu/noble/amdgpu-install_6.3.60304-1_all.deb
+cd /tmp
+wget $DRIVER
+apt-get install -y --no-install-recommends ca-certificates gnupg
+mkdir -p /usr/share/keyrings
+
+# Add ROCm GPG key
+wget -qO- https://repo.radeon.com/rocm/rocm.gpg.key \
+  | gpg --dearmor \
+  > /usr/share/keyrings/rocm.gpg
+
+chmod 644 /usr/share/keyrings/rocm.gpg
+
+# Add ROCm repository
+echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/6.3.4 noble main' | \
+tee /etc/apt/sources.list.d/rocm.list
+
+# Pin ROCm packages to high priority to avoid conflicts
+cat > /etc/apt/preferences.d/rocm-repo <<'EOF'
+Package: *
+Pin: origin "repo.radeon.com"
+Pin-Priority: 1001
+EOF
+# Install ROCm packages
+apt-get update
+apt-get install -y rocm-hip-sdk rocm-dev rocm-hip-runtime rocm-smi-lib
+# Install AMD GPU driver for OpenCL
+apt-get -y -o Dpkg::Options::="--force-confold" install ./amdgpu-install_*.deb
+amdgpu-install --list-usecase
+amdgpu-install --usecase=opencl --no-dkms -y
+echo PATH=\"\$PATH:/opt/rocm/bin:/opt/rocm/opencl/bin\" >> /environment
+echo LD_LIBRARY_PATH=\"\$LD_LIBRARY_PATH:/opt/rocm/lib:/opt/rocm/lib64\" >> /environment
+echo "export PATH LD_LIBRARY_PATH" >> /environment
+rm -rf /tmp/amd*
+ls /etc/OpenCL/vendors
+/opt/rocm/bin/clinfo
+
+# install python and packages
+##############################
+apt install -y python3 python3-numpy python3-scipy python3-matplotlib python3-pandas python3-ipython \
+               python3-pyopencl python3-tqdm libclfft-dev python3-gpyfft \
+               python3-pip python3-virtualenv
+
+# install xsuite 
+#################
+virtualenv --system-site-packages /xsuite-env
+. /xsuite-env/bin/activate
+echo '. /xsuite-env/bin/activate' >> $SINGULARITY_ENVIRONMENT
+
+# install cupy on ROCm
+export ROCM_HOME=/opt/rocm
+export HIPCC="$ROCM_HOME/bin/hipcc"
+export CXX="$HIPCC"
+export PATH="$ROCM_HOME/bin:$PATH"
+export LD_LIBRARY_PATH="$ROCM_HOME/lib:$ROCM_HOME/lib64:${LD_LIBRARY_PATH}"
+# Cluster gpu is gfx908, dev GPU is gfx906 - adjust as needed
+export HCC_AMDGPU_TARGET=gfx906
+export CUPY_INSTALL_USE_HIP=1
+pip install "cupy==13.6.0"
+
+# install xsuite dependencies
+pip install siphash24
+pip install cpymad
+pip install h5py pyheadtail
+pip install pytest pytest-mock
+
+# Manually install xobjects from ROCm branch - to be removed once merged
+rm -rf xobjects
+git clone https://github.com/ekatralis/xobjects.git
+cd ./xobjects
+git checkout RocmSupportMain
+pip install .
+cd ..
+
+pip install xsuite
+pip install xplt[full]
+#pip install setuptools
+#xsuite-prebuild regenerate
+pip freeze
+
+# cleanup
+##########
+apt purge -y wget .\*-doc$
+# do not apt autoremove -y -> removes important rocm dependencies
+apt-get clean -y
+rm -rf /var/lib/apt/lists/*
+pip cache purge
+
+
+
+
+
