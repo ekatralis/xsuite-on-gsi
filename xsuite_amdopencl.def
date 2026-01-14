@@ -46,6 +46,7 @@ echo '. /xsuite-env/bin/activate' >> $SINGULARITY_ENVIRONMENT
 pip install siphash24
 pip install cpymad
 pip install h5py pyheadtail
+pip install pytest pytest-mock
 pip install xsuite
 pip install xplt[full]
 #pip install setuptools

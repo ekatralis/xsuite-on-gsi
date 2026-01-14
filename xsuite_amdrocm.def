@@ -18,14 +18,11 @@ apt-get install -y wget libnuma-dev git-all
 
 # install AMD drivers
 ######################
-# see https://www.amd.com/en/support
-ROCM_KEY=https://repo.radeon.com/rocm/rocm.gpg.key
-DRIVER=https://repo.radeon.com/amdgpu-install/6.3.4/ubuntu/noble/amdgpu-install_6.3.60304-1_all.deb
+# see https://xsuite.readthedocs.io/en/latest/installation.html (Once published)
 cd /tmp
-wget $DRIVER
 apt-get install -y --no-install-recommends ca-certificates gnupg
 mkdir -p /usr/share/keyrings
-
+rm -rf /tmp/rocm.gpg.key*
 # Add ROCm GPG key
 wget -qO- https://repo.radeon.com/rocm/rocm.gpg.key \
   | gpg --dearmor \
@@ -43,19 +40,15 @@ Package: *
 Pin: origin "repo.radeon.com"
 Pin-Priority: 1001
 EOF
-# Install ROCm packages
+# Install ROCm/OpenCL packages
 apt-get update
-apt-get install -y rocm-hip-sdk rocm-dev rocm-hip-runtime rocm-smi-lib
-# Install AMD GPU driver for OpenCL
-apt-get -y -o Dpkg::Options::="--force-confold" install ./amdgpu-install_*.deb
-amdgpu-install --list-usecase
-amdgpu-install --usecase=opencl --no-dkms -y
+apt-get install -y rocm-hip-sdk rocm-dev rocm-hip-runtime rocm-opencl-runtime rocm-smi-lib
 echo PATH=\"\$PATH:/opt/rocm/bin:/opt/rocm/opencl/bin\" >> /environment
 echo LD_LIBRARY_PATH=\"\$LD_LIBRARY_PATH:/opt/rocm/lib:/opt/rocm/lib64\" >> /environment
 echo "export PATH LD_LIBRARY_PATH" >> /environment
-rm -rf /tmp/amd*
 ls /etc/OpenCL/vendors
 /opt/rocm/bin/clinfo
+/opt/rocm/bin/rocminfo
 
 # install python and packages
 ##############################
@@ -80,14 +73,14 @@ export HCC_AMDGPU_TARGET=gfx906
 export CUPY_INSTALL_USE_HIP=1
 pip install "cupy==13.6.0"
 
-# install xsuite dependencies
+# install xsuite useful packages
 pip install siphash24
 pip install cpymad
 pip install h5py pyheadtail
 pip install pytest pytest-mock
 
 # Manually install xobjects from ROCm branch - to be removed once merged
-rm -rf xobjects
+rm -rf /tmp/xobjects
 git clone https://github.com/ekatralis/xobjects.git
 cd ./xobjects
 git checkout RocmSupportMain
