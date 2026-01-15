@@ -69,6 +69,7 @@ print('Using context:', context)
 
 
 ## Generate a simple line
+t_set = time.perf_counter()
 line = xt.Line(
     elements=[xt.Drift(length=2.),
               xt.Multipole(knl=[0, 1.], ksl=[0,0]),
@@ -91,7 +92,7 @@ particles = xp.Particles(_context=context,
                         delta=np.random.uniform(-1e-4, 1e-4, n_part),
                         )
 
-
+print('Setup completed in:', time.perf_counter()-t_set, 's')
 
 ## Tracking
 ####################
