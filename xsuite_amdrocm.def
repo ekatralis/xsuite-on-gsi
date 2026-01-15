@@ -48,7 +48,6 @@ echo LD_LIBRARY_PATH=\"\$LD_LIBRARY_PATH:/opt/rocm/lib:/opt/rocm/lib64\" >> /env
 echo "export PATH LD_LIBRARY_PATH" >> /environment
 ls /etc/OpenCL/vendors
 /opt/rocm/bin/clinfo
-/opt/rocm/bin/rocminfo
 
 # install python and packages
 ##############################
