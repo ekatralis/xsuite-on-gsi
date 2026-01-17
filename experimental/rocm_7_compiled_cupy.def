@@ -1,0 +1,113 @@
+Bootstrap: docker
+From: ubuntu:24.04
+
+%labels
+AUTHOR Evangelos Katralis
+
+%help
+See https://git.gsi.de/p.niedermayer/xsuite-on-hpc
+
+%files
+example.py /xsuite/example.py
+
+%arguments
+  CUPY_SOURCE="AMD"
+
+%post
+set -eux
+export DEBIAN_FRONTEND=noninteractive
+
+CUPY_SOURCE="{{ CUPY_SOURCE }}"
+echo "CUPY_SOURCE is set to ${CUPY_SOURCE}"
+
+apt-get update
+apt-get install -y wget libnuma-dev git-all
+
+
+# install AMD drivers
+######################
+# see https://xsuite.readthedocs.io/en/latest/installation.html (Once published)
+cd /tmp
+apt-get install -y --no-install-recommends ca-certificates gnupg
+mkdir -p /usr/share/keyrings
+rm -rf /tmp/rocm.gpg.key*
+# Add ROCm GPG key
+wget -qO- https://repo.radeon.com/rocm/rocm.gpg.key \
+  | gpg --dearmor \
+  > /usr/share/keyrings/rocm.gpg
+
+chmod 644 /usr/share/keyrings/rocm.gpg
+
+# Add ROCm repository
+echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/rocm.gpg] https://repo.radeon.com/rocm/apt/7.1.1 noble main' | \
+tee /etc/apt/sources.list.d/rocm.list
+
+# Pin ROCm packages to high priority to avoid conflicts
+cat > /etc/apt/preferences.d/rocm-repo <<'EOF'
+Package: *
+Pin: origin "repo.radeon.com"
+Pin-Priority: 1001
+EOF
+# Install ROCm/OpenCL packages
+apt-get update
+apt-get install -y rocm-hip-sdk rocm-dev rocm-hip-runtime rocm-opencl-runtime rocm-smi-lib
+echo PATH=\"\$PATH:/opt/rocm/bin:/opt/rocm/opencl/bin\" >> /environment
+echo LD_LIBRARY_PATH=\"\$LD_LIBRARY_PATH:/opt/rocm/lib:/opt/rocm/lib64\" >> /environment
+echo "export PATH LD_LIBRARY_PATH" >> /environment
+echo "export ROCM_HOME=/opt/rocm" >> /environment
+ls /etc/OpenCL/vendors
+/opt/rocm/bin/clinfo
+
+# install python and packages
+##############################
+apt install -y python3 python3-numpy python3-scipy python3-matplotlib python3-pandas python3-ipython \
+               python3-pyopencl python3-tqdm libclfft-dev python3-gpyfft \
+               python3-pip python3-virtualenv
+
+# install xsuite 
+#################
+virtualenv --system-site-packages /xsuite-env
+. /xsuite-env/bin/activate
+echo '. /xsuite-env/bin/activate' >> $SINGULARITY_ENVIRONMENT
+
+export ROCM_HOME=/opt/rocm
+# install cupy on ROCm
+case "${CUPY_SOURCE}" in
+  PYPI) pip install cupy-rocm-7-0 --pre -U -f https://pip.cupy.dev/pre ;;
+  AMD)  pip install amd-cupy --extra-index-url https://pypi.amd.com/rocm-7.0.2/simple ;;
+  *)    echo "Unsupported CUPY_SOURCE. Supported: PYPI, AMD"; exit 1 ;;
+esac
+
+
+# install xsuite useful packages
+pip install siphash24
+pip install cpymad
+pip install h5py pyheadtail
+pip install pytest pytest-mock
+
+# Manually install xobjects from ROCm branch - to be removed once merged
+rm -rf /tmp/xobjects
+git clone https://github.com/ekatralis/xobjects.git
+cd ./xobjects
+git checkout RocmSupportMain
+pip install .
+cd ..
+
+pip install xsuite
+pip install xplt[full]
+#pip install setuptools
+#xsuite-prebuild regenerate
+pip freeze
+
+# cleanup
+##########
+apt purge -y wget .\*-doc$
+# do not apt autoremove -y -> removes important rocm dependencies
+apt-get clean -y
+rm -rf /var/lib/apt/lists/*
+pip cache purge
+
+
+
+
+
