@@ -9,7 +9,7 @@ From: ubuntu:24.04
 # Newer gfx908 TheRock builds are listed at
 #   https://rocm.devreleases.amd.com/tarball-multi-arch/
 %arguments
-    ROCM_TARBALL_URL=https://stable.repo.amd.com/rocm/core/tarball/therock-dist-windows-gfx908-10.2.0.tar.gz
+    ROCM_TARBALL_URL=https://stable.repo.amd.com/rocm/core/tarball/therock-dist-linux-gfx908-10.2.0.tar.gz
                       #https://nightly.repo.amd.com/rocm/core/tarball/therock-dist-linux-gfx908-10.3.0a20261031.tar.gz
     AMD_PYPI_INDEX=https://pypi.amd.com/rocm-10.0.0/simple/
 
